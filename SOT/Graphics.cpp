@@ -16,6 +16,14 @@ public:
 	ID3D11DeviceContext* device_context{ nullptr };
 	HWND window;
 	WNDCLASSEXW wc{};
+	int screenWidth;
+	int screenHeight;
+
+	Graphics() {
+		screenWidth = GetSystemMetrics(SM_CXSCREEN);
+		screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	}
+
 	~Graphics() {
 		if (swap_chain) {
 			swap_chain->Release();
@@ -33,8 +41,7 @@ public:
 		UnregisterClassW(wc.lpszClassName, wc.hInstance);
 	}
 	void InitializeWindow(WNDPROC winProc) {
-		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-		int screeHeight = GetSystemMetrics(SM_CYSCREEN);
+
 
 		wc.cbSize = sizeof(WNDCLASSEXW);
 		wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -48,7 +55,7 @@ public:
 			wc.lpszClassName,
 			L"CHANGECHEATNAME",
 			WS_POPUP,
-			0, 0, screenWidth, screeHeight,
+			0, 0, screenWidth, screenHeight,
 			nullptr,
 			nullptr,
 			wc.hInstance,
@@ -146,17 +153,18 @@ public:
 
 		// Menu code here
 		if (MenuOpen) {
-			ImGui::Begin("Test window");
-			ImGui::Text("Hello");
+			ImGui::Begin("Test window", NULL, ImGuiWindowFlags_AlwaysAutoResize);
+			ImGui::Text("Hello, World");
 			ImGui::Checkbox("Toggle", &some_variable);
 			ImGui::Button("Press");
 			ImGui::End();
 		}
 		// ESP code here
-		ImGui::GetBackgroundDrawList()->AddCircleFilled({ 1000, 1000 }, 100.f, ImColor(1.f, 0.f, 0.f));
+		ImGui::GetBackgroundDrawList()->AddCircleFilled({ sXP(50.f) , sYP(50.f) }, 100.f, ImColor(1.f, 0.f, 0.f));
 	// end of drawing
 		//Rendering
 		ImGui::Render();
+		
 
 
 		constexpr float color[4]{ 0.f, 0.f, 0.f, 0.f };
@@ -178,5 +186,17 @@ public:
 			SetWindowLong(window, GWL_EXSTYLE, WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT);
 		}
 	}
+
+
+private:
+	//Screen X Percentage
+	float sXP(float percentage) {
+		return (float)screenWidth / 100.f * percentage;
+	}
+	//Screen Y Percentage
+	float sYP(float percentage) {
+		return (float)screenHeight / 100.f * percentage;
+	}
 };
+
 
