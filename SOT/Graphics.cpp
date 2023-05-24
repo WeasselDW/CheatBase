@@ -140,7 +140,14 @@ public:
 
 
 	}
+
+	// Imgui Variables
 	bool some_variable = false;
+	float some_float = 0.f;
+
+
+
+
 	void RenderFrame() {
 
 		ImGui_ImplDX11_NewFrame();
@@ -153,20 +160,21 @@ public:
 
 		// Menu code here
 		if (MenuOpen) {
-			ImGui::Begin("Test window", NULL, ImGuiWindowFlags_AlwaysAutoResize);
+			ImGui::Begin("Test window", NULL, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
 			ImGui::Text("Hello, World");
 			ImGui::Checkbox("Toggle", &some_variable);
 			ImGui::Button("Press");
+			ImGui::SliderFloat("float", &some_float, 0.0f, 1.0f);
 			ImGui::End();
 		}
 		// ESP code here
-		ImGui::GetBackgroundDrawList()->AddCircleFilled({ sXP(50.f) , sYP(50.f) }, 100.f, ImColor(1.f, 0.f, 0.f));
+		ImGui::GetBackgroundDrawList()->AddCircleFilled({ sXP(50.f) , sYP(50.f) }, 10.f, ImColor(1.f, 0.f, 0.f));
 	// end of drawing
+	 
+	 
+	
 		//Rendering
 		ImGui::Render();
-		
-
-
 		constexpr float color[4]{ 0.f, 0.f, 0.f, 0.f };
 		device_context->OMSetRenderTargets(1U, &render_target_view, nullptr);
 		device_context->ClearRenderTargetView(render_target_view, color);
