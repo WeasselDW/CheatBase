@@ -1,5 +1,5 @@
 # External CheatBase
-### Windows only!
+### Windows only! (Only tested on windows 11)
 External CheatBase is a basis of which a external cheat can be made, it utilizes the ImGui library(directX11) for the graphics (esp) and for the Menu (GUI). A Object Oriented Programing style is applied to the Graphics and the Memory.
 
 ## Installation
@@ -47,7 +47,8 @@ Graphics.cpp
 	// end of drawing
 ```
 Make sure to use percentages of screen width and height to avoid problems with different resolutions.
-
+## Questions?
+add me on discord Wessel#9460
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
