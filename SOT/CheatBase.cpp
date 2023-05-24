@@ -50,12 +50,12 @@ int main()
 
         //Put main loop code here |
         //                       \|/
-        
+        graphics.RenderFrame();
         if (GetAsyncKeyState(VK_HOME) & 1) {
             graphics.MenuOpen = !graphics.MenuOpen;
             graphics.OpenGui();
         }
-        graphics.RenderFrame();
+        
     }
     // unload memory & graphics class / unhook
     delete &mem;
