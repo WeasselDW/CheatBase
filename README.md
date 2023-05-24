@@ -49,6 +49,9 @@ Graphics.cpp
 Make sure to use percentages of screen width and height to avoid problems with different resolutions.
 ## Questions?
 add me on discord Wessel#9460
+
+##TODO:
+- Check if applicatien has been closed
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
