@@ -11,7 +11,7 @@ public:
     HANDLE hProc = NULL;
     uintptr_t baseAddress = NULL;
     bool terminateProcess = false;
-    LPCWSTR CheatName = L"CHANGE THIS!"; // .exe name of the application/game e.g. (csgo.exe)
+    LPCWSTR CheatName = L"SoTGame.exe"; // .exe name of the application/game e.g. (csgo.exe)
 
 
 

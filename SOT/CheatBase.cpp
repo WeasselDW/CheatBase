@@ -32,29 +32,33 @@ int main()
     }
     
     // mainloop (Window)
+    // init main loop
     bool running = true;
     while (running) {
+        // check if quit button is clicked
         MSG msg;
         while (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-
             if (msg.message == WM_QUIT) {
                 running = false;
             }
-
         }
         if (!running) {
             break;
         }
 
-        //Put code here |
-        //             \|/
+        //Put main loop code here |
+        //                       \|/
         graphics.RenderFrame();
-
+        if (GetAsyncKeyState(VK_HOME) & 1) {
+            graphics.MenuOpen = !graphics.MenuOpen;
+            graphics.OpenGui();
+        }
     }
-    // unload memory class / unhook
+    // unload memory & graphics class / unhook
     delete &mem;
+    delete &graphics;
     // unload IMGUI
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();

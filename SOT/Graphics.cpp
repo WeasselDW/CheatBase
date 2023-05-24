@@ -9,6 +9,7 @@
 class Graphics
 {
 public:
+	bool MenuOpen = false;
 	IDXGISwapChain* swap_chain{nullptr};
 	ID3D11RenderTargetView* render_target_view{ nullptr };
 	ID3D11Device* device{ nullptr };
@@ -132,7 +133,7 @@ public:
 
 
 	}
-
+	bool some_variable = false;
 	void RenderFrame() {
 
 		ImGui_ImplDX11_NewFrame();
@@ -143,7 +144,16 @@ public:
 	// draw code thingy goes here |
 	//  						 \|/
 
-		//ImGui::GetBackgroundDrawList()->AddCircleFilled({ 1000, 1000 }, 100.f, ImColor(1.f, 0.f, 0.f));
+		// Menu code here
+		if (MenuOpen) {
+			ImGui::Begin("Test window");
+			ImGui::Text("Hello");
+			ImGui::Checkbox("Toggle", &some_variable);
+			ImGui::Button("Press");
+			ImGui::End();
+		}
+
+		ImGui::GetBackgroundDrawList()->AddCircleFilled({ 1000, 1000 }, 100.f, ImColor(1.f, 0.f, 0.f));
 	// end of drawing
 		//Rendering
 		ImGui::Render();
@@ -157,6 +167,17 @@ public:
 
 		swap_chain->Present(1U, 0U);
 
+	}
+
+	void OpenGui() {
+		if (MenuOpen)
+		{
+			SetWindowLong(window, GWL_EXSTYLE, WS_EX_TOPMOST | WS_EX_LAYERED);
+			SetForegroundWindow(window);
+			//Imgui Stuff
+		}else{
+			SetWindowLong(window, GWL_EXSTYLE, WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT);
+		}
 	}
 };
 
