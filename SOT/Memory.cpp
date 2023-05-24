@@ -11,17 +11,17 @@ public:
     HANDLE hProc = NULL;
     uintptr_t baseAddress = NULL;
     bool terminateProcess = false;
-    LPCWSTR CheatName = L"SoTGame.exe"; // .exe name of the application/game e.g. (csgo.exe)
+    LPCWSTR GameName = L"game.exe"; // .exe name of the application/game e.g. (csgo.exe)
 
 
 
     Memory() {
         //Process ID
-        ProcessID = FindProcId(CheatName);
+        ProcessID = FindProcId(GameName);
         if (ProcessID == 0) { terminateProcess = true; return; } // check if PID is invalid
 
         // Module base Adress
-        baseAddress = getBaseAddr(ProcessID, CheatName);
+        baseAddress = getBaseAddr(ProcessID, GameName);
         if (baseAddress == 0) { terminateProcess = true; return;}// check if Base Adress is invalid
 
         // Open the process

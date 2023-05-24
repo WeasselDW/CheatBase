@@ -46,7 +46,7 @@ public:
 		window = CreateWindowExW(
 			WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_LAYERED,
 			wc.lpszClassName,
-			L"StardustHook",
+			L"CHANGECHEATNAME",
 			WS_POPUP,
 			0, 0, screenWidth, screeHeight,
 			nullptr,
@@ -141,8 +141,8 @@ public:
 		ImGui::NewFrame();
 
 
-	// draw code thingy goes here |
-	//  						 \|/
+	// draw code goes here |
+	//  				  \|/
 
 		// Menu code here
 		if (MenuOpen) {
@@ -152,7 +152,7 @@ public:
 			ImGui::Button("Press");
 			ImGui::End();
 		}
-
+		// ESP code here
 		ImGui::GetBackgroundDrawList()->AddCircleFilled({ 1000, 1000 }, 100.f, ImColor(1.f, 0.f, 0.f));
 	// end of drawing
 		//Rendering
@@ -174,7 +174,6 @@ public:
 		{
 			SetWindowLong(window, GWL_EXSTYLE, WS_EX_TOPMOST | WS_EX_LAYERED);
 			SetForegroundWindow(window);
-			//Imgui Stuff
 		}else{
 			SetWindowLong(window, GWL_EXSTYLE, WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT);
 		}
