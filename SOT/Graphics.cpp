@@ -5,6 +5,8 @@
 #include <d3d11.h>
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
+#include "imgui/imgui_internal.h"
+
 
 class Graphics
 {
@@ -137,22 +139,28 @@ public:
 
 		ImGui_ImplWin32_Init(window);
 		ImGui_ImplDX11_Init(device, device_context);
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 
+		
 	}
-
+	
 	// Imgui Variables
 	bool some_variable = false;
 	float some_float = 0.f;
 
 
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize ; //ImGuiWindowFlags_MenuBar 
 
 
 	void RenderFrame() {
 
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
+
+
 		ImGui::NewFrame();
+		
 
 
 	// draw code goes here |
@@ -160,12 +168,49 @@ public:
 
 		// Menu code here
 		if (MenuOpen) {
-			ImGui::Begin("Test window", NULL, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
+
+
+
+			ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+			ImGui::Begin("CheatBase dockspace", NULL, window_flags);
+			ImGuiID dockspace_id = ImGui::GetID("CheatBase dockspace");
+			ImGui::DockSpace(dockspace_id, {800, 600}, ImGuiDockNodeFlags_PassthruCentralNode);
+
+			static auto first_time = true;
+			if (first_time)
+			{
+				first_time = false;
+				ImGui::DockBuilderRemoveNode(dockspace_id); // clear any previous layout
+				ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_DockSpace);
+				ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
+
+				auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.2f, nullptr, &dockspace_id);
+				auto dock_id_down = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.25f, nullptr, &dockspace_id);
+
+				ImGui::DockBuilderDockWindow("CheatBase window 1", dock_id_down);
+				ImGui::DockBuilderDockWindow("Test window", dock_id_left);
+				ImGui::DockBuilderFinish(dockspace_id);
+			}
+			ImGui::End();
+			
+			ImGui::Begin("CheatBase window 1", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
 			ImGui::Text("Hello, World");
 			ImGui::Checkbox("Toggle", &some_variable);
 			ImGui::Button("Press");
 			ImGui::SliderFloat("float", &some_float, 0.0f, 1.0f);
 			ImGui::End();
+
+			ImGui::Begin("Test window", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
+			ImGui::Text("Hello, World");
+			ImGui::Checkbox("Toggle", &some_variable);
+			ImGui::Button("Press");
+			ImGui::SliderFloat("float", &some_float, 0.0f, 1.0f);
+			ImGui::End();
+
+
+
+
 		}
 		// ESP code here
 		ImGui::GetBackgroundDrawList()->AddCircleFilled({ sXP(50.f) , sYP(50.f) }, 10.f, ImColor(1.f, 0.f, 0.f));
@@ -174,6 +219,8 @@ public:
 	 
 	
 		//Rendering
+
+
 		ImGui::Render();
 		constexpr float color[4]{ 0.f, 0.f, 0.f, 0.f };
 		device_context->OMSetRenderTargets(1U, &render_target_view, nullptr);
