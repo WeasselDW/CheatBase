@@ -25,13 +25,14 @@ public:
         if (baseAddress == 0) { terminateProcess = true; return;}// check if Base Adress is invalid
 
         // Open the process
-        HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, NULL, ProcessID);
-
+        hProc = OpenProcess(PROCESS_ALL_ACCESS, NULL, ProcessID);
+        return;
     }
     ~Memory() {
         //Deleting a memory class
         std::cout << "Shutting down memory class" << "\n";
-        CloseHandle(hProc);
+        if (hProc) { CloseHandle(hProc); };//wierd crash
+        return;
     }
 
 private:
@@ -45,7 +46,7 @@ private:
 
         //Create a snapshot of all processes currently running
         HANDLE procSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS , NULL);
-        // loop thru the processes untill you find the one named "SoTGame.exe"
+        // loop thru the processes untill you find the one named "game.exe"
         for (bool b = Process32First(procSnap, &procEntry); b; b = Process32Next(procSnap, &procEntry))
         {
             //string compare process exe name with procName
@@ -76,7 +77,7 @@ private:
 
 
         // creating a snapshot of all modules
-        HANDLE procSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, procID);
+        HANDLE procSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32 , procID);
         // loop thru modules
         for (bool b = Module32First(procSnap, &modEntry); b; b = Module32Next(procSnap, &modEntry)) {
             //if module found

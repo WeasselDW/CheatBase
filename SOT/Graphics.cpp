@@ -7,7 +7,6 @@
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_internal.h"
 
-
 class Graphics
 {
 public:
@@ -42,6 +41,7 @@ public:
 		DestroyWindow(window);
 		UnregisterClassW(wc.lpszClassName, wc.hInstance);
 	}
+
 	void InitializeWindow(WNDPROC winProc) {
 
 
@@ -144,73 +144,92 @@ public:
 
 		
 	}
-	
+
 	// Imgui Variables
-	bool some_variable = false;
-	float some_float = 0.f;
+
+	bool ESP_Enabled = false;
+	bool CHAMS_Enabled = false;
 
 
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize ; //ImGuiWindowFlags_MenuBar 
 
 
 	void RenderFrame() {
 
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
-
-
 		ImGui::NewFrame();
 		
-
-
 	// draw code goes here |
 	//  				  \|/
 
 		// Menu code here
 		if (MenuOpen) {
 
-
-
 			ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-			ImGui::Begin("CheatBase dockspace", NULL, window_flags);
+			ImGui::Begin("CheatBase dockspace", NULL, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 			ImGuiID dockspace_id = ImGui::GetID("CheatBase dockspace");
-			ImGui::DockSpace(dockspace_id, {800, 600}, ImGuiDockNodeFlags_PassthruCentralNode);
-
-			static auto first_time = true;
+			static bool first_time = true;
 			if (first_time)
 			{
-				first_time = false;
+				
 				ImGui::DockBuilderRemoveNode(dockspace_id); // clear any previous layout
-				ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_DockSpace);
+				ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_DockSpace | ImGuiDockNodeFlags_NoWindowMenuButton);
 				ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
-
-				auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.2f, nullptr, &dockspace_id);
-				auto dock_id_down = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.25f, nullptr, &dockspace_id);
-
-				ImGui::DockBuilderDockWindow("CheatBase window 1", dock_id_down);
-				ImGui::DockBuilderDockWindow("Test window", dock_id_left);
-				ImGui::DockBuilderFinish(dockspace_id);
 			}
+			if (ImGui::BeginTabBar("Cheat"))
+			{
+				ImGui::DockSpace(dockspace_id, { 800, 600 }, ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoWindowMenuButton);
+
+				if (ImGui::BeginTabItem("Visuals"))
+				{
+					ImGui::Begin("ESP", NULL);
+					ImGui::Checkbox("Enabled", &ESP_Enabled);
+					ImGui::End();
+
+					ImGui::Begin("CHAMS", NULL);
+					ImGui::Checkbox("Enabled", &CHAMS_Enabled);
+					ImGui::End();
+
+					ImGui::EndTabItem();
+					ImGui::DockBuilderDockWindow("ESP", dockspace_id);
+					ImGui::DockBuilderDockWindow("CHAMS", dockspace_id);
+
+				}
+				if (ImGui::BeginTabItem("Aimbot"))
+				{
+					ImGui::Begin("Closet", NULL);
+					ImGui::Checkbox("Enabled", &ESP_Enabled);
+					ImGui::End();
+
+					ImGui::Begin("Rage", NULL);
+					ImGui::Checkbox("Enabled", &CHAMS_Enabled);
+					ImGui::End();
+
+					ImGui::EndTabItem();
+					ImGui::DockBuilderDockWindow("Closet", dockspace_id);
+					ImGui::DockBuilderDockWindow("Rage", dockspace_id);
+				}
+				if (ImGui::BeginTabItem("Misc"))
+				{
+					ImGui::Begin("test", NULL);
+					ImGui::Button("Test");
+					ImGui::End();
+
+					ImGui::Begin("Profiles", NULL);
+					ImGui::Button("Save");
+					ImGui::Button("Load");
+					ImGui::End();
+
+					ImGui::EndTabItem();
+					ImGui::DockBuilderDockWindow("test", dockspace_id);
+					ImGui::DockBuilderDockWindow("Profiles", dockspace_id);
+				}
+				ImGui::EndTabBar();
+			}
+
+			first_time = false;
 			ImGui::End();
-			
-			ImGui::Begin("CheatBase window 1", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
-			ImGui::Text("Hello, World");
-			ImGui::Checkbox("Toggle", &some_variable);
-			ImGui::Button("Press");
-			ImGui::SliderFloat("float", &some_float, 0.0f, 1.0f);
-			ImGui::End();
-
-			ImGui::Begin("Test window", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
-			ImGui::Text("Hello, World");
-			ImGui::Checkbox("Toggle", &some_variable);
-			ImGui::Button("Press");
-			ImGui::SliderFloat("float", &some_float, 0.0f, 1.0f);
-			ImGui::End();
-
-
-
-
 		}
 		// ESP code here
 		ImGui::GetBackgroundDrawList()->AddCircleFilled({ sXP(50.f) , sYP(50.f) }, 10.f, ImColor(1.f, 0.f, 0.f));

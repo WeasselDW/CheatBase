@@ -21,15 +21,14 @@ LRESULT CALLBACK window_procedure(HWND window, UINT message, WPARAM wParam, LPAR
     return DefWindowProc(window, message, wParam, lParam);
 }
 
-
 int main()
 {
     Memory mem;
     Graphics graphics;
-    graphics.InitializeWindow(window_procedure);
     if (mem.terminateProcess) {
         return(101);
     }
+    graphics.InitializeWindow(window_procedure);
     
     // mainloop (Window)
     // init main loop
@@ -55,11 +54,11 @@ int main()
             graphics.MenuOpen = !graphics.MenuOpen;
             graphics.OpenGui();
         }
+
         
     }
-    // unload memory & graphics class / unhook
-    delete &mem;
-    delete &graphics;
+    //delete &mem;
+    //delete &graphics;
     // unload IMGUI
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
