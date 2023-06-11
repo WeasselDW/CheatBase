@@ -29,29 +29,17 @@ Graphics.cpp
 
 Be sure to use the right platform (x86 for 32 bit games and x64 for 64 bit games)
 ## Usage
-Graphics.cpp
-```cpp
-	// draw code goes here |
-	//  		      \|/
+in Menu.cpp
+Add or Change your Tabbar item function.
+Put it in the rendermenu function.
+Add your variables.
+Use it anywhere!
 
-		// Menu code here
-		if (MenuOpen) {
-			ImGui::Begin("Test window");
-			ImGui::Text("Hello");
-			ImGui::Checkbox("Toggle", &some_variable);
-			ImGui::Button("Press");
-			ImGui::End();
-		}
-		// ESP code here
-		ImGui::GetBackgroundDrawList()->AddCircleFilled({ 1000, 1000 }, 100.f, ImColor(1.f, 0.f, 0.f));
-	// end of drawing
-```
+A crosshair example is integrated.
+
 Make sure to use percentages of screen width and height to avoid problems with different resolutions.
 ## Questions?
 add me on discord Wessel#9460
-
-##TODO:
-- Check if applicatien has been closed
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
