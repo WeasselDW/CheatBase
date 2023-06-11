@@ -11,6 +11,8 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="ESP.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="offsets.h" />
