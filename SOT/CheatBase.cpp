@@ -6,8 +6,6 @@
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-
-
 LRESULT CALLBACK window_procedure(HWND window, UINT message, WPARAM wParam, LPARAM lParam) {
     if (ImGui_ImplWin32_WndProcHandler(window, message, wParam, lParam)) {
         return 0L;
@@ -21,14 +19,13 @@ LRESULT CALLBACK window_procedure(HWND window, UINT message, WPARAM wParam, LPAR
     return DefWindowProc(window, message, wParam, lParam);
 }
 
+
 int main()
 {
-    Memory mem;
-    Graphics graphics;
-    if (mem.terminateProcess) {
-        return(101);
-    }
-    graphics.InitializeWindow(window_procedure);
+    Memory* mem = new Memory(L"cmd.exe");
+    Graphics* graphics = new Graphics();
+
+    graphics->InitializeWindow(window_procedure);
     
     // mainloop (Window)
     // init main loop
@@ -49,16 +46,19 @@ int main()
 
         //Put main loop code here |
         //                       \|/
-        graphics.RenderFrame();
+        graphics->RenderFrame();
+        mem->MemoryLoop();
         if (GetAsyncKeyState(VK_HOME) & 1) {
-            graphics.MenuOpen = !graphics.MenuOpen;
-            graphics.OpenGui();
+            graphics->menu->MenuOpen = !graphics->menu->MenuOpen;
+            graphics->OpenGui();
         }
+
 
         
     }
-    //delete &mem;
-    //delete &graphics;
+    //delete Class objects
+    delete &mem;
+    delete &graphics;
     // unload IMGUI
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
