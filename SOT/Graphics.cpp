@@ -6,26 +6,33 @@
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_internal.h"
+#include "Menu.cpp"
+#include "ESP.cpp"
 
 class Graphics
 {
 public:
-	bool MenuOpen = false;
+	Menu* menu = new Menu();
+	ESP* esp = new ESP(menu);
+	// not important window setup variables
 	IDXGISwapChain* swap_chain{nullptr};
 	ID3D11RenderTargetView* render_target_view{ nullptr };
 	ID3D11Device* device{ nullptr };
 	ID3D11DeviceContext* device_context{ nullptr };
 	HWND window;
 	WNDCLASSEXW wc{};
+
+	// public Screen Width and Height
 	int screenWidth;
 	int screenHeight;
 
 	Graphics() {
 		screenWidth = GetSystemMetrics(SM_CXSCREEN);
 		screenHeight = GetSystemMetrics(SM_CYSCREEN);
+		return;
 	}
-
 	~Graphics() {
+		// Release all Window handles
 		if (swap_chain) {
 			swap_chain->Release();
 		}
@@ -40,8 +47,8 @@ public:
 		}
 		DestroyWindow(window);
 		UnregisterClassW(wc.lpszClassName, wc.hInstance);
+		return;
 	}
-
 	void InitializeWindow(WNDPROC winProc) {
 
 
@@ -55,7 +62,7 @@ public:
 		window = CreateWindowExW(
 			WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_LAYERED,
 			wc.lpszClassName,
-			L"CHANGECHEATNAME",
+			L"CHANGECHEATNAME", // <- Window Name Change this to your cheat's name
 			WS_POPUP,
 			0, 0, screenWidth, screenHeight,
 			nullptr,
@@ -86,7 +93,7 @@ public:
 		}
 
 		DXGI_SWAP_CHAIN_DESC sd{};
-		sd.BufferDesc.RefreshRate.Numerator = 60U;
+		sd.BufferDesc.RefreshRate.Numerator = 60U; // Window FPS change this to increse FPS (Will also increse the loop speed)
 		sd.BufferDesc.RefreshRate.Denominator = 1U;
 		sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		sd.SampleDesc.Count = 1U;
@@ -147,9 +154,6 @@ public:
 
 	// Imgui Variables
 
-	bool ESP_Enabled = false;
-	bool CHAMS_Enabled = false;
-
 
 
 
@@ -163,76 +167,10 @@ public:
 	//  				  \|/
 
 		// Menu code here
-		if (MenuOpen) {
-
-			ImGuiViewport* viewport = ImGui::GetMainViewport();
-
-			ImGui::Begin("CheatBase dockspace", NULL, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
-			ImGuiID dockspace_id = ImGui::GetID("CheatBase dockspace");
-			static bool first_time = true;
-			if (first_time)
-			{
-				
-				ImGui::DockBuilderRemoveNode(dockspace_id); // clear any previous layout
-				ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_DockSpace | ImGuiDockNodeFlags_NoWindowMenuButton);
-				ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
-			}
-			if (ImGui::BeginTabBar("Cheat"))
-			{
-				ImGui::DockSpace(dockspace_id, { 800, 600 }, ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoWindowMenuButton);
-
-				if (ImGui::BeginTabItem("Visuals"))
-				{
-					ImGui::Begin("ESP", NULL);
-					ImGui::Checkbox("Enabled", &ESP_Enabled);
-					ImGui::End();
-
-					ImGui::Begin("CHAMS", NULL);
-					ImGui::Checkbox("Enabled", &CHAMS_Enabled);
-					ImGui::End();
-
-					ImGui::EndTabItem();
-					ImGui::DockBuilderDockWindow("ESP", dockspace_id);
-					ImGui::DockBuilderDockWindow("CHAMS", dockspace_id);
-
-				}
-				if (ImGui::BeginTabItem("Aimbot"))
-				{
-					ImGui::Begin("Closet", NULL);
-					ImGui::Checkbox("Enabled", &ESP_Enabled);
-					ImGui::End();
-
-					ImGui::Begin("Rage", NULL);
-					ImGui::Checkbox("Enabled", &CHAMS_Enabled);
-					ImGui::End();
-
-					ImGui::EndTabItem();
-					ImGui::DockBuilderDockWindow("Closet", dockspace_id);
-					ImGui::DockBuilderDockWindow("Rage", dockspace_id);
-				}
-				if (ImGui::BeginTabItem("Misc"))
-				{
-					ImGui::Begin("test", NULL);
-					ImGui::Button("Test");
-					ImGui::End();
-
-					ImGui::Begin("Profiles", NULL);
-					ImGui::Button("Save");
-					ImGui::Button("Load");
-					ImGui::End();
-
-					ImGui::EndTabItem();
-					ImGui::DockBuilderDockWindow("test", dockspace_id);
-					ImGui::DockBuilderDockWindow("Profiles", dockspace_id);
-				}
-				ImGui::EndTabBar();
-			}
-
-			first_time = false;
-			ImGui::End();
-		}
+		menu->RenderMenu();
 		// ESP code here
-		ImGui::GetBackgroundDrawList()->AddCircleFilled({ sXP(50.f) , sYP(50.f) }, 10.f, ImColor(1.f, 0.f, 0.f));
+		esp->RenderESP(ImGui::GetBackgroundDrawList());
+
 	// end of drawing
 	 
 	 
@@ -252,7 +190,7 @@ public:
 	}
 
 	void OpenGui() {
-		if (MenuOpen)
+		if (menu->MenuOpen)
 		{
 			SetWindowLong(window, GWL_EXSTYLE, WS_EX_TOPMOST | WS_EX_LAYERED);
 			SetForegroundWindow(window);
