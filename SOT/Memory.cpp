@@ -3,38 +3,60 @@
 #include <TlHelp32.h>
 #include <iostream>
 #include "offsets.h"
+#include <processthreadsapi.h>
 #pragma once
 class Memory
 {
 public:
-    int ProcessID = NULL;
-    HANDLE hProc = NULL;
-    uintptr_t baseAddress = NULL;
-    bool terminateProcess = false;
-    LPCWSTR GameName = L"game.exe"; // .exe name of the application/game e.g. (csgo.exe)
+
+    int ProcessID = NULL; // not very important for later use
+
+    HANDLE hProc = NULL; // Important for ReadProcessMemory()
+    uintptr_t ExebaseAddress = NULL; // BaseAddress from the main exe
 
 
+    Memory(LPCWSTR GameName) {
+        // Gain access to the process in 3 simple steps:
+        // 1: Get the process id by looping thru all processes and comparing the name om the .exe file
+        // 2: Get the Module base address by looping thru all modules and comparing the name of the .exe / .dll file
+        // 3: Open the process which will return a HANDLE called hProc and u can use that as an argument in ReadProccesMemory()
 
-    Memory() {
+
         //Process ID
         ProcessID = FindProcId(GameName);
-        if (ProcessID == 0) { terminateProcess = true; return; } // check if PID is invalid
+        if (ProcessID == NULL) { ExitProcess(101); } // check if PID is invalid
+        std::wcout << (const wchar_t*)GameName << L"'s ProcessId: " << ProcessID << "\n";
 
         // Module base Adress
-        baseAddress = getBaseAddr(ProcessID, GameName);
-        if (baseAddress == 0) { terminateProcess = true; return;}// check if Base Adress is invalid
+        // Add more GetBaseAddr funtions if dll's base addresses are needed
+        ExebaseAddress = getBaseAddr(ProcessID, GameName);
+        if (ExebaseAddress == NULL) { ExitProcess(102); }// check if Base Adress is invalid
+        std::cout << std::hex << "Module base adress: 0x" << ExebaseAddress << "\n" << std::dec;
 
         // Open the process
         hProc = OpenProcess(PROCESS_ALL_ACCESS, NULL, ProcessID);
+        if (hProc == NULL) { ExitProcess(103); }
+
         return;
     }
     ~Memory() {
         //Deleting a memory class
         std::cout << "Shutting down memory class" << "\n";
-        if (hProc) { CloseHandle(hProc); };//wierd crash
+        if (hProc) { CloseHandle(hProc); }; // Release the HANDLE hProc
+
         return;
     }
 
+
+    void MemoryLoop() {
+        //check if process still exists
+        DWORD exitCode = 0;
+        GetExitCodeProcess(hProc, &exitCode);
+        if (exitCode != STILL_ACTIVE) {
+            ExitProcess(104);
+        }
+        
+    }
 private:
     
     static DWORD FindProcId(LPCWSTR procName) {
@@ -53,9 +75,6 @@ private:
             if (wcscmp(procEntry.szExeFile, procName) == 0)
             {
                 ProcID = procEntry.th32ProcessID;
-                std::cout << "ProcessId: " << ProcID << "\n";
-                
-
                 break;
             }
 
@@ -84,7 +103,6 @@ private:
             if (wcscmp(modEntry.szModule, modname) == 0) {
                 //store module base addr in var
                 modBaseAddr = (uintptr_t)modEntry.modBaseAddr;
-                std::cout << std::hex << "Module base adress: 0x" << modBaseAddr << "\n" << std::dec;
 
             }
         }
